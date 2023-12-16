@@ -1,0 +1,54 @@
+From 4e447b8e6d0728fb0e6bcbb40be55750434b4b73 Mon Sep 17 00:00:00 2001
+From: Tom Rix <trix@redhat.com>
+Date: Sat, 14 Oct 2023 12:57:00 -0700
+Subject: [PATCH] Prepare torchdata setup for fedora
+
+This is a tarball, do not use git
+
+distutils is not available in 3.12
+For package building we do not need it so comment out use.
+
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ setup.py | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index 77ae89cb..6d202c5a 100644
+--- a/setup.py
++++ b/setup.py
+@@ -5,7 +5,7 @@
+ # This source code is licensed under the BSD-style license found in the
+ # LICENSE file in the root directory of this source tree.
+ 
+-import distutils.command.clean
++# import distutils.command.clean
+ import os
+ import shutil
+ import subprocess
+@@ -120,10 +120,11 @@ requirements = _get_requirements()
+ requirements.append(pytorch_package_dep)
+ 
+ 
+-class clean(distutils.command.clean.clean):
++# class clean(distutils.command.clean.clean):
++class clean():
+     def run(self):
+         # Run default behavior first
+-        distutils.command.clean.clean.run(self)
++        # distutils.command.clean.clean.run(self)
+ 
+         # Remove torchdata extension
+         def remove_extension(pattern):
+@@ -153,7 +154,7 @@ if __name__ == "__main__":
+     if RUN_BUILD_DEP:
+         from tools.gen_pyi import gen_pyi
+ 
+-        _check_submodules()
++#        _check_submodules()
+         gen_pyi()
+ 
+     setup(
+-- 
+2.42.1
+
