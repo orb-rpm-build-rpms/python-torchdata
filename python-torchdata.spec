@@ -1,15 +1,32 @@
 %global pypi_name torchdata
-%global pypi_version 0.7
+%global pypi_version 0.7.1
 
-%bcond_with gitcommit
+%bcond_without gitcommit
 %if %{with gitcommit}
-# The top of the 0.7 branch - update to whatever..
-%global commit0 4e255c95c76b1ccde4f6650391c0bc30650d6dbe
+# Fixes are still happening in after 0.7.1
+# ex/
+# commit 07903385443da2cab8ed90c46bd4e02412945100
+# Author: Danylo Baibak <baibak@meta.com>
+# Date:   Fri Jan 26 01:12:03 2024 -0800
+#
+#    Forward fix / Update dill_available API for torchdata (#1222)
+#
+# Since torchtext depends on torchdata that depends on torch..
+# we need to use the commit
+%global commit0 66f0b984d4c3b2f7d715d8eb4e4cac5101bf7f08
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
+%global date0 20240327
 %endif
 
+%bcond_with test
+
 Name:           python-%{pypi_name}
-Version:        %{pypi_version}.0
+%if %{with gitcommit}
+Version:        %{pypi_version}^git%{date0}.%{shortcommit0}
+%else
+Version:        %{pypi_version}
+%endif
+
 Release:        %autorelease
 Summary:        A PyTorch module for data loading
 
@@ -19,16 +36,18 @@ URL:            https://github.com/pytorch/data
 Source0:        %{url}/archive/%{commit0}/data-%{shortcommit0}.tar.gz
 %else
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz#/data-%{version}.tar.gz
+%endif
 # Do not use git submodules
 # Do not use distutils
 Patch0:         0001-Prepare-torchdata-setup-for-fedora.patch
-%endif
+
 
 # Limit to these because that is what torch is on
 ExclusiveArch:  x86_64 aarch64
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
+BuildRequires:  python3dist(pytest)
 BuildRequires:  python3dist(requests)
 BuildRequires:  python3dist(setuptools)
 BuildRequires:  python3dist(torch)
@@ -60,10 +79,13 @@ rm -rf third_party/*
 %build
 %py3_build
 
-# Depends on 
-# E   ModuleNotFoundError: No module named 'expecttest'
-# %%check
-# %%pytest
+# Testing has a circular dependency
+# E   ModuleNotFoundError: No module named 'torchtext'
+# We need torchdata to build torchtext :(
+%if %{with test}
+%check
+%pytest
+%endif
 
 %install
 %py3_install
