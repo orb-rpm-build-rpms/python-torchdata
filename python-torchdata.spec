@@ -1,8 +1,8 @@
 %global pypi_name torchdata
-%global pypi_version 0.7.1
 
-%bcond_without gitcommit
+%bcond_with gitcommit
 %if %{with gitcommit}
+%global pypi_version 0.7.1
 # Fixes are still happening in after 0.7.1
 # ex/
 # commit 07903385443da2cab8ed90c46bd4e02412945100
@@ -16,6 +16,8 @@
 %global commit0 66f0b984d4c3b2f7d715d8eb4e4cac5101bf7f08
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 %global date0 20240327
+%else
+%global pypi_version 0.8.0
 %endif
 
 %bcond_with test
