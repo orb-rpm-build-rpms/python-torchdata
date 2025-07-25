@@ -17,7 +17,7 @@
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 %global date0 20240327
 %else
-%global pypi_version 0.8.0
+%global pypi_version 0.11.0
 %endif
 
 %bcond_with test
@@ -41,7 +41,7 @@ Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz#/data-%{version}.tar
 %endif
 # Do not use git submodules
 # Do not use distutils
-Patch0:         0001-Prepare-torchdata-setup-for-fedora.patch
+# Patch0:         0001-Prepare-torchdata-setup-for-fedora.patch
 
 
 # Limit to these because that is what torch is on
